@@ -16,4 +16,48 @@ model User {
   id    String @id @default(uuid())
   name  String
   email String @unique
+
+  boards Board[]
+}
+
+model Board {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  color       String  @default("#FFFFFF")
+
+  user_id    String
+  created_at DateTime @default(now())
+
+  lists List[]
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
+
+model List {
+  id    String @id @default(uuid())
+  title String
+  order Int    @default(0)
+
+  board_id   String
+  created_at DateTime @default(now())
+
+  cards Card[]
+
+  board Board @relation(fields: [board_id], references: [id], onDelete: Cascade)
+}
+
+model Card {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  order       Int     @default(0)
+
+  assignee String?
+
+  due_date   DateTime?
+  list_id    String
+  created_at DateTime  @default(now())
+
+  list List @relation(fields: [list_id], references: [id], onDelete: Cascade)
 }
