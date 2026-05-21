@@ -21,3 +21,14 @@ export async function createBoardWithDefaultLists(
 export async function getBoardsByEmail(email: string) {
   return boardService.getBoardsByEmail(email);
 }
+
+export async function getBoardWithLists(boardId: string) {
+  return boardService.getBoardWithLists(boardId);
+}
+
+export async function updateBoardWithId(
+  boardId: string,
+  updateData: Partial<{ title: string; description: string; color: string }>,
+) {
+  return boardService.updateBoardWithId(boardId, updateData);
+}
