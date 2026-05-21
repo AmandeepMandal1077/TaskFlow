@@ -2,7 +2,7 @@ import prisma from "@/lib/prisma";
 import { List } from "@/generated/prisma/client";
 
 export const listService = {
-  async getLists(boardId: string) {
+  async getListsByBoardId(boardId: string) {
     try {
       return await prisma.list.findMany({
         where: {

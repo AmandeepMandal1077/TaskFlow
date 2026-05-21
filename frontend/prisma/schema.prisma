@@ -18,6 +18,8 @@ model User {
   email String @unique
 
   boards Board[]
+  assignedCards Card[] @relation("CardAssignees")
+
 }
 
 model Board {
@@ -54,11 +56,11 @@ model Card {
   description String?
   order       Int     @default(0)
 
-  assignee String?
-
   due_date   DateTime?
   list_id    String
   created_at DateTime  @default(now())
 
   list List @relation(fields: [list_id], references: [id], onDelete: Cascade)
+
+  assignees User[] @relation("CardAssignees")
 }
