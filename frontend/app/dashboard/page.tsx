@@ -112,16 +112,17 @@ export default function Dashboard() {
             {boards.map((board) => (
               <div key={board.id} className="group">
                 <Link href={`/board/${board.id}`}>
-                  <Card className="h-64 overflow-hidden rounded-2xl border-neutral-300 bg-white transition-all duration-200 hover:-translate-y-0.5 hover:border-black hover:shadow-md">
+                  <Card className="h-52 gap-0 overflow-hidden rounded-2xl border-neutral-300 bg-white p-0 transition-all duration-200 hover:-translate-y-0.5 hover:border-black hover:shadow-md">
                     <CardHeader
-                      className="h-[80%] border-b border-neutral-200 p-0"
-                      style={{ backgroundColor: board.color || "#e5e5e5" }}
+                      className={`h-[75%] border-b border-neutral-200 p-0 ${
+                        board.color || "bg-neutral-200"
+                      }`}
                     />
-                    <CardContent className="flex h-[20%] items-center justify-between gap-3 p-3">
-                      <CardTitle className="line-clamp-2 text-sm font-semibold tracking-tight">
+                    <CardContent className="flex h-[25%] items-center justify-between gap-3 p-3">
+                      <CardTitle className="line-clamp-2 text-lg font-semibold tracking-tight">
                         {board.title}
                       </CardTitle>
-                      <div className="shrink-0 text-right text-[10px] leading-tight text-neutral-600">
+                      <div className="shrink-0 text-right text-[12px] leading-tight text-neutral-600">
                         <p>
                           Created at:{" "}
                           {new Date(board.created_at).toLocaleDateString()}
