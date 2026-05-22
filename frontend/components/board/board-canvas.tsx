@@ -16,9 +16,10 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { Card } from "@/generated/prisma/browser";
+import { CardWithRelations } from "@/server/queries/card";
 import { BoardCardOverlay } from "./board-card";
-import { reorderCards } from "@/server/actions/card";
+import { reorderCards, updateCard } from "@/server/actions/card";
+import { CardDetailDialog } from "./card-detail-dialog";
 
 interface BoardCanvasProps {
   listId: string;
@@ -48,7 +49,8 @@ export function BoardCanvas({
   const inputRef = useRef<HTMLInputElement>(null);
   // const { setLists } = useBoard(listId);
 
-  const [activeCard, setActiveCard] = useState<Card | null>(null);
+  const [activeCard, setActiveCard] = useState<CardWithRelations | null>(null);
+  const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const affectedListIds = useRef<Set<string>>(new Set());
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -198,6 +200,18 @@ export function BoardCanvas({
     }
   };
 
+  const handleToggleComplete = async (cardId: string, isComplete: boolean) => {
+    setLists((prev) => prev.map((l) => ({
+      ...l,
+      cards: l.cards.map((c) => c.id === cardId ? { ...c, is_complete: isComplete } : c),
+    })));
+    try {
+      await updateCard(cardId, { is_complete: isComplete });
+    } catch (err) {
+      console.error("Failed to toggle completion", err);
+    }
+  };
+
   return (
     <div className="flex-1 w-full overflow-x-auto overflow-y-hidden py-4 h-full flex flex-col justify-start">
       {/* Lists */}
@@ -216,6 +230,8 @@ export function BoardCanvas({
               onAddCard={onAddCard}
               onRenameList={onRenameList}
               onDeleteList={onDeleteList}
+              onCardClick={(cardId) => setSelectedCardId(cardId)}
+              onToggleComplete={handleToggleComplete}
             />
           ))}
 
@@ -270,6 +286,14 @@ export function BoardCanvas({
           </DragOverlay>
         </div>
       </DndContext>
+
+      <CardDetailDialog 
+        card={lists.flatMap(l => l.cards).find(c => c.id === selectedCardId) || null}
+        isOpen={!!selectedCardId}
+        onClose={() => setSelectedCardId(null)}
+        lists={lists}
+        setLists={setLists}
+      />
     </div>
   );
 }
