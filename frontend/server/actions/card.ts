@@ -20,3 +20,9 @@ export async function moveCard(
 ) {
   return await cardService.moveCard(cardId, targetListId, targetOrder);
 }
+
+export async function reorderCards(
+  affectedLists: { listId: string; cardIds: string[] }[],
+) {
+  return await cardService.reorderCards(affectedLists);
+}

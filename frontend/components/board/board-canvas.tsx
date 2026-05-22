@@ -18,7 +18,7 @@ import {
 } from "@dnd-kit/core";
 import { Card } from "@/generated/prisma/browser";
 import { BoardCardOverlay } from "./board-card";
-import { moveCard } from "@/server/actions/card";
+import { reorderCards } from "@/server/actions/card";
 
 interface BoardCanvasProps {
   listId: string;
@@ -49,6 +49,7 @@ export function BoardCanvas({
   // const { setLists } = useBoard(listId);
 
   const [activeCard, setActiveCard] = useState<Card | null>(null);
+  const affectedListIds = useRef<Set<string>>(new Set());
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -65,6 +66,10 @@ export function BoardCanvas({
 
     if (card) {
       setActiveCard(card);
+      affectedListIds.current.clear();
+      // Record the starting list
+      const startList = lists.find((l) => l.cards.some((c) => c.id === cardId));
+      if (startList) affectedListIds.current.add(startList.id);
     }
   }
 
@@ -89,6 +94,10 @@ export function BoardCanvas({
       }
 
       if (!sourceList || !targetList) return prev;
+
+      // Track affected lists
+      affectedListIds.current.add(sourceList.id);
+      affectedListIds.current.add(targetList.id);
 
       if (sourceList.id === targetList.id) {
         const activeIndex = sourceList.cards.findIndex(
@@ -126,20 +135,27 @@ export function BoardCanvas({
   async function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
     setActiveCard(null);
-    if (!over) return;
+    if (!over) {
+      affectedListIds.current.clear();
+      return;
+    }
 
-    const activeId = active.id as string;
+    // Build the affected lists payload from current state
+    const payload = lists
+      .filter((list) => affectedListIds.current.has(list.id))
+      .map((list) => ({
+        listId: list.id,
+        cardIds: list.cards.map((card) => card.id),
+      }));
 
-    // Find where the card ended up (state is already correct from handleDragOver)
-    const currentList = lists.find((list) =>
-      list.cards.some((card) => card.id === activeId),
-    );
+    affectedListIds.current.clear();
 
-    if (currentList) {
-      const cardIndex = currentList.cards.findIndex(
-        (card) => card.id === activeId,
-      );
-      await moveCard(activeId, currentList.id, cardIndex >= 0 ? cardIndex : 0);
+    if (payload.length > 0) {
+      try {
+        await reorderCards(payload);
+      } catch (err) {
+        console.error("Failed to reorder cards", err);
+      }
     }
   }
 
