@@ -1,11 +1,7 @@
 "use client";
 import { Navbar } from "@/components/navbar";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -29,6 +25,7 @@ export default function BoardPage() {
     createListInBoard,
     updateListInBoard,
     deleteListInBoard,
+    setLists,
   } = useBoard(id);
 
   const { boards } = useBoards();
@@ -235,12 +232,12 @@ export default function BoardPage() {
       {/* Board content */}
       <main className="flex-1 min-h-0 relative">
         <BoardCanvas
+          listId={id}
+          setLists={setLists}
           lists={lists}
           onAddCard={createCardInList}
           onAddList={(title) => createListInBoard({ title })}
-          onRenameList={(listId, title) =>
-            updateListInBoard(listId, { title })
-          }
+          onRenameList={(listId, title) => updateListInBoard(listId, { title })}
           onDeleteList={deleteListInBoard}
         />
       </main>

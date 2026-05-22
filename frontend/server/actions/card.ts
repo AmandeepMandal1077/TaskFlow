@@ -12,3 +12,17 @@ export async function createCard(
 ) {
   return await cardService.createCard(listId, cardData);
 }
+
+export async function moveCard(
+  cardId: string,
+  targetListId: string,
+  targetOrder: number,
+) {
+  return await cardService.moveCard(cardId, targetListId, targetOrder);
+}
+
+export async function reorderCards(
+  affectedLists: { listId: string; cardIds: string[] }[],
+) {
+  return await cardService.reorderCards(affectedLists);
+}
