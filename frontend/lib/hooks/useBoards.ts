@@ -1,17 +1,18 @@
 "use client";
 
-import { Board, List, Card } from "@/generated/prisma/browser";
+import { Board, List } from "@/generated/prisma/browser";
+import { CardWithRelations } from "@/server/queries/card";
 import {
   createBoardWithDefaultLists,
   getBoardsByEmail,
   getBoardWithLists,
   updateBoardWithId,
 } from "@/server/actions/board";
-import { createCard, moveCard as moveCardAction } from "@/server/actions/card";
+import { createCard, moveCard as moveCardAction, updateCard as updateCardAction, deleteCard as deleteCardAction } from "@/server/actions/card";
 import { createList, updateList, deleteList } from "@/server/actions/list";
 
 export type ListWithCards = List & {
-  cards: Card[];
+  cards: CardWithRelations[];
 };
 
 import { useCallback, useEffect, useState } from "react";
@@ -181,7 +182,7 @@ export function useBoard(boardId: string) {
       await moveCardAction(cardId, targetListId, targetOrder);
       setLists((prevLists) => {
         const newLists = [...prevLists];
-        let movedCard: Card | null = null;
+        let movedCard: CardWithRelations | null = null;
 
         for (const list of newLists) {
           const cardIndex = list.cards.findIndex((card) => card.id === cardId);
@@ -206,6 +207,40 @@ export function useBoard(boardId: string) {
     }
   }
 
+  async function updateCardInList(
+    cardId: string,
+    data: Parameters<typeof updateCardAction>[1]
+  ) {
+    try {
+      const updatedCard = await updateCardAction(cardId, data);
+      setLists((prevLists) =>
+        prevLists.map((list) => ({
+          ...list,
+          cards: list.cards.map((card) =>
+            card.id === cardId ? { ...card, ...updatedCard } : card
+          ),
+        }))
+      );
+      return updatedCard;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update card");
+    }
+  }
+
+  async function deleteCardInList(cardId: string) {
+    try {
+      await deleteCardAction(cardId);
+      setLists((prevLists) =>
+        prevLists.map((list) => ({
+          ...list,
+          cards: list.cards.filter((card) => card.id !== cardId),
+        }))
+      );
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete card");
+    }
+  }
+
   return {
     board,
     lists,
@@ -218,5 +253,7 @@ export function useBoard(boardId: string) {
     updateListInBoard,
     deleteListInBoard,
     moveCard,
+    updateCardInList,
+    deleteCardInList,
   };
 }

@@ -29,6 +29,8 @@ interface BoardColumnProps {
   ) => Promise<any>;
   onRenameList: (listId: string, newTitle: string) => Promise<any>;
   onDeleteList: (listId: string) => Promise<any>;
+  onCardClick?: (cardId: string) => void;
+  onToggleComplete?: (cardId: string, isComplete: boolean) => void;
 }
 
 export function BoardColumn({
@@ -36,6 +38,8 @@ export function BoardColumn({
   onAddCard,
   onRenameList,
   onDeleteList,
+  onCardClick,
+  onToggleComplete,
 }: BoardColumnProps) {
   const [isAddingCard, setIsAddingCard] = useState(false);
   const [newCardTitle, setNewCardTitle] = useState("");
@@ -256,7 +260,12 @@ export function BoardColumn({
       >
         <div className="flex-1 overflow-y-auto px-2 pb-1 space-y-1.5 min-h-0">
           {list.cards.map((card) => (
-            <BoardCard key={card.id} card={card} />
+            <BoardCard 
+              key={card.id} 
+              card={card} 
+              onClick={() => onCardClick?.(card.id)} 
+              onToggleComplete={onToggleComplete}
+            />
           ))}
         </div>
       </SortableContext>
