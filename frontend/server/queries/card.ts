@@ -43,4 +43,21 @@ export const cardService = {
       throw new Error("Failed to create card");
     }
   },
+
+  async moveCard(cardId: string, targetListId: string, targetOrder: number) {
+    try {
+      return await prisma.card.update({
+        where: {
+          id: cardId,
+        },
+        data: {
+          list_id: targetListId,
+          order: targetOrder,
+        },
+      });
+    } catch (err) {
+      console.error("Error moving card:", err);
+      throw new Error("Failed to move card");
+    }
+  },
 };

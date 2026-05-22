@@ -10,11 +10,16 @@ import {
   Edit2,
   ChevronsLeftRight,
   ChevronsRightLeft,
-  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useDroppable } from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { BoardCard } from "./board-card";
 
 interface BoardColumnProps {
   list: ListWithCards;
@@ -42,6 +47,8 @@ export function BoardColumn({
   const menuRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const cardInputRef = useRef<HTMLTextAreaElement>(null);
+
+  const { setNodeRef, isOver } = useDroppable({ id: list.id });
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -119,7 +126,10 @@ export function BoardColumn({
   // Collapsed state: vertical strip with rotated title and card count
   if (isCollapsed) {
     return (
-      <div className="flex shrink-0 flex-col items-center bg-neutral-800/90 backdrop-blur-sm rounded-xl w-10 py-2 gap-2 self-start">
+      <div
+        ref={setNodeRef}
+        className="flex shrink-0 flex-col items-center bg-neutral-800/90 backdrop-blur-sm rounded-xl w-10 py-2 gap-2 self-start"
+      >
         <button
           onClick={() => setIsCollapsed(false)}
           className="p-1 text-neutral-400 hover:text-white transition-colors"
@@ -152,7 +162,10 @@ export function BoardColumn({
   }
 
   return (
-    <div className="flex h-fit w-64 shrink-0 flex-col bg-neutral-800/90 backdrop-blur-sm rounded-xl max-h-[85vh]">
+    <div
+      ref={setNodeRef}
+      className={`flex h-fit w-64 shrink-0 flex-col bg-neutral-800/90 backdrop-blur-sm rounded-xl max-h-[85vh] ${isOver ? "bg-blue-500/20" : ""}`}
+    >
       {/* List Header */}
       <div className="relative flex items-center justify-between px-3 py-2.5">
         <div className="flex-1 min-w-0 mr-1">
@@ -236,18 +249,17 @@ export function BoardColumn({
       </div>
 
       {/* Cards Stack */}
-      <div className="flex-1 overflow-y-auto px-2 pb-1 space-y-1.5 min-h-0">
-        {list.cards.map((card) => (
-          <div
-            key={card.id}
-            className="bg-neutral-700/80 hover:bg-neutral-700 px-3 py-2 rounded-lg cursor-pointer transition-colors"
-          >
-            <span className="text-neutral-200 leading-snug break-words">
-              {card.title}
-            </span>
-          </div>
-        ))}
-      </div>
+
+      <SortableContext
+        items={list.cards.map((card) => card.id)}
+        strategy={verticalListSortingStrategy}
+      >
+        <div className="flex-1 overflow-y-auto px-2 pb-1 space-y-1.5 min-h-0">
+          {list.cards.map((card) => (
+            <BoardCard key={card.id} card={card} />
+          ))}
+        </div>
+      </SortableContext>
 
       {/* Footer: Add card + open icon */}
       <div className="px-2 py-1.5">

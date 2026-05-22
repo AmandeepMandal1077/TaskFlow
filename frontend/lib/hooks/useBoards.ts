@@ -7,7 +7,7 @@ import {
   getBoardWithLists,
   updateBoardWithId,
 } from "@/server/actions/board";
-import { createCard } from "@/server/actions/card";
+import { createCard, moveCard as moveCardAction } from "@/server/actions/card";
 import { createList, updateList, deleteList } from "@/server/actions/list";
 
 export type ListWithCards = List & {
@@ -126,7 +126,10 @@ export function useBoard(boardId: string) {
     }
   }
 
-  async function createListInBoard(listData: { title: string; order?: number }) {
+  async function createListInBoard(listData: {
+    title: string;
+    order?: number;
+  }) {
     try {
       const newList = await createList(boardId, {
         title: listData.title,
@@ -169,15 +172,51 @@ export function useBoard(boardId: string) {
     }
   }
 
+  async function moveCard(
+    cardId: string,
+    targetListId: string,
+    targetOrder: number,
+  ) {
+    try {
+      await moveCardAction(cardId, targetListId, targetOrder);
+      setLists((prevLists) => {
+        const newLists = [...prevLists];
+        let movedCard: Card | null = null;
+
+        for (const list of newLists) {
+          const cardIndex = list.cards.findIndex((card) => card.id === cardId);
+          if (cardIndex !== -1) {
+            movedCard = list.cards[cardIndex];
+            list.cards.splice(cardIndex, 1);
+            break;
+          }
+        }
+
+        if (movedCard) {
+          const targetList = newLists.find((list) => list.id === targetListId);
+          if (targetList) {
+            targetList.cards.splice(targetOrder, 0, movedCard);
+          }
+        }
+
+        return newLists;
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to move card");
+    }
+  }
+
   return {
     board,
     lists,
     loading,
     error,
+    setLists,
     updateBoard,
     createCardInList,
     createListInBoard,
     updateListInBoard,
     deleteListInBoard,
+    moveCard,
   };
 }
