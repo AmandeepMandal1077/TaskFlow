@@ -1,12 +1,18 @@
 "use client";
 
-import { Board, List } from "@/generated/prisma/browser";
+import { Board, List, Card } from "@/generated/prisma/browser";
 import {
   createBoardWithDefaultLists,
   getBoardsByEmail,
   getBoardWithLists,
   updateBoardWithId,
 } from "@/server/actions/board";
+import { createCard } from "@/server/actions/card";
+import { createList, updateList, deleteList } from "@/server/actions/list";
+
+export type ListWithCards = List & {
+  cards: Card[];
+};
 
 import { useCallback, useEffect, useState } from "react";
 export function useBoards() {
@@ -56,7 +62,7 @@ export function useBoards() {
 
 export function useBoard(boardId: string) {
   const [board, setBoard] = useState<Board | null>(null);
-  const [lists, setLists] = useState<List[]>([]);
+  const [lists, setLists] = useState<ListWithCards[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -67,7 +73,7 @@ export function useBoard(boardId: string) {
       try {
         const data = await getBoardWithLists(boardId);
         setBoard(data.board);
-        setLists(data.lists);
+        setLists(data.listsWithCards);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load boards");
       } finally {
@@ -93,11 +99,85 @@ export function useBoard(boardId: string) {
     }
   }
 
+  async function createCardInList(
+    listId: string,
+    cardData: { title: string; description?: string; order?: number },
+  ) {
+    try {
+      const newCard = await createCard(listId, {
+        ...cardData,
+        order:
+          cardData.order ||
+          lists.find((list) => list.id === listId)?.cards.length ||
+          0,
+      });
+
+      setLists((prevLists) =>
+        prevLists.map((list) =>
+          list.id === listId
+            ? { ...list, cards: [...list.cards, newCard] }
+            : list,
+        ),
+      );
+
+      return newCard;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create card");
+    }
+  }
+
+  async function createListInBoard(listData: { title: string; order?: number }) {
+    try {
+      const newList = await createList(boardId, {
+        title: listData.title,
+        order: listData.order ?? lists.length,
+      });
+      const newListWithCards: ListWithCards = {
+        ...newList,
+        cards: [],
+      };
+      setLists((prevLists) => [...prevLists, newListWithCards]);
+      return newList;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create list");
+    }
+  }
+
+  async function updateListInBoard(
+    listId: string,
+    updateData: { title?: string; order?: number },
+  ) {
+    try {
+      const updatedList = await updateList(listId, updateData);
+      setLists((prevLists) =>
+        prevLists.map((list) =>
+          list.id === listId ? { ...list, ...updatedList } : list,
+        ),
+      );
+      return updatedList;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update list");
+    }
+  }
+
+  async function deleteListInBoard(listId: string) {
+    try {
+      await deleteList(listId);
+      setLists((prevLists) => prevLists.filter((list) => list.id !== listId));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete list");
+    }
+  }
+
   return {
     board,
     lists,
     loading,
     error,
     updateBoard,
+    createCardInList,
+    createListInBoard,
+    updateListInBoard,
+    deleteListInBoard,
   };
 }
