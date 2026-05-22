@@ -25,4 +25,31 @@ export const listService = {
       throw new Error("Failed to create list");
     }
   },
+
+  async updateList(listId: string, data: Partial<{ title: string; order: number }>) {
+    try {
+      return await prisma.list.update({
+        where: {
+          id: listId,
+        },
+        data,
+      });
+    } catch (error) {
+      console.error("Error updating list:", error);
+      throw new Error("Failed to update list");
+    }
+  },
+
+  async deleteList(listId: string) {
+    try {
+      return await prisma.list.delete({
+        where: {
+          id: listId,
+        },
+      });
+    } catch (error) {
+      console.error("Error deleting list:", error);
+      throw new Error("Failed to delete list");
+    }
+  },
 };

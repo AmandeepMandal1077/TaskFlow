@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { Board } from "@/generated/prisma/client";
 import { listService } from "@/server/queries/list";
+import { cardService } from "./card";
 
 export const boardService = {
   async getBoardsByUserId(userId: string) {
@@ -61,7 +62,13 @@ export const boardService = {
       if (!board) {
         throw new Error("Board not found");
       }
-      return { board, lists };
+
+      const cards = await cardService.getCardsByBoardId(boardId);
+      const listsWithCards = lists.map((list) => ({
+        ...list,
+        cards: cards.filter((card) => card.list_id === list.id),
+      }));
+      return { board, listsWithCards };
     } catch (error) {
       console.error("Error fetching board with lists:", error);
       throw new Error("Failed to fetch board with lists");
