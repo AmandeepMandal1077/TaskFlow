@@ -91,6 +91,7 @@ export const boardService = {
     email: string;
     description?: string;
     color?: string;
+    image_url?: string;
   }) {
     try {
       const user = await prisma.user.findUnique({
@@ -109,6 +110,7 @@ export const boardService = {
           user_id: user.id,
           description: boardData.description,
           color: boardData.color,
+          image_url: boardData.image_url,
         },
       });
 
