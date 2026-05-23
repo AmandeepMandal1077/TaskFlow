@@ -288,7 +288,7 @@ export function CardDetailDialog({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
         style={{ width: "50vw", maxWidth: "none" }}
-        className="max-h-[85vh] !top-16 !translate-y-0 overflow-hidden bg-neutral-800 text-neutral-200 border-neutral-700 p-0"
+        className="max-h-[85vh] !top-16 !translate-y-0 overflow-hidden bg-neutral-900 text-neutral-200 border-neutral-700 p-0"
         showCloseButton={false}
       >
         <DialogTitle className="sr-only">
@@ -353,7 +353,7 @@ export function CardDetailDialog({
                 </Button>
               </PopoverTrigger>
               <PopoverContent 
-                className="w-72 bg-neutral-800 border-neutral-700 text-neutral-200"
+                className="w-72 bg-neutral-900 border-neutral-700 text-neutral-200"
                 onWheelCapture={(e) => e.stopPropagation()}
               >
                 <h4 className="font-semibold mb-2">
@@ -446,12 +446,12 @@ export function CardDetailDialog({
                   <CalendarIcon className="w-4 h-4 mr-2" /> Dates
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-auto p-0 bg-neutral-800 border-neutral-700">
+              <PopoverContent className="w-auto p-0 bg-neutral-900 border-neutral-700">
                 <Calendar
                   mode="single"
                   selected={card.due_date ? new Date(card.due_date) : undefined}
                   onSelect={handleDateSelect}
-                  className="bg-neutral-800 text-neutral-200"
+                  className="bg-neutral-900 text-neutral-200"
                 />
               </PopoverContent>
             </Popover>
@@ -469,7 +469,7 @@ export function CardDetailDialog({
                   <CheckSquare className="w-4 h-4 mr-2" /> Checklist
                 </Button>
               </PopoverTrigger>
-              <PopoverContent className="w-64 bg-neutral-800 border-neutral-700">
+              <PopoverContent className="w-64 bg-neutral-900 border-neutral-700">
                 <h4 className="font-semibold mb-2 text-neutral-200">
                   Add checklist
                 </h4>
@@ -501,7 +501,7 @@ export function CardDetailDialog({
                 </Button>
               </PopoverTrigger>
               <PopoverContent 
-                className="w-72 bg-neutral-800 border-neutral-700 text-neutral-200"
+                className="w-72 bg-neutral-900 border-neutral-700 text-neutral-200"
                 onWheelCapture={(e) => e.stopPropagation()}
               >
                 <h4 className="font-semibold mb-2">Members</h4>

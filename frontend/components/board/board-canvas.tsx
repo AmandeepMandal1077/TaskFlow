@@ -12,7 +12,7 @@ import {
   DragOverlay,
   DragStartEvent,
   PointerSensor,
-  rectIntersection,
+  closestCorners,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -32,6 +32,8 @@ interface BoardCanvasProps {
   onAddList: (title: string) => Promise<any>;
   onRenameList: (listId: string, newTitle: string) => Promise<any>;
   onDeleteList: (listId: string) => Promise<any>;
+  filterCards: (cards: CardWithRelations[]) => CardWithRelations[];
+  isAnyFilterActive: boolean;
 }
 
 export function BoardCanvas({
@@ -42,12 +44,13 @@ export function BoardCanvas({
   onAddList,
   onRenameList,
   onDeleteList,
+  filterCards,
+  isAnyFilterActive,
 }: BoardCanvasProps) {
   const [isAddingList, setIsAddingList] = useState(false);
   const [newListTitle, setNewListTitle] = useState("");
   const formRef = useRef<HTMLFormElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  // const { setLists } = useBoard(listId);
 
   const [activeCard, setActiveCard] = useState<CardWithRelations | null>(null);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
@@ -108,7 +111,8 @@ export function BoardCanvas({
         const overIndex = sourceList.cards.findIndex(
           (card) => card.id === overId,
         );
-        if (activeIndex === overIndex) return prev;
+        
+        if (overIndex === -1 || activeIndex === overIndex) return prev;
 
         const newLists = prev.map((l) => ({ ...l, cards: [...l.cards] }));
         const list = newLists.find((l) => l.id === sourceList.id)!;
@@ -217,23 +221,28 @@ export function BoardCanvas({
       {/* Lists */}
       <DndContext
         sensors={sensors}
-        collisionDetection={rectIntersection}
+        collisionDetection={closestCorners}
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
         <div className="flex gap-3 px-4 sm:px-6 select-none items-start h-full pb-4">
-          {lists.map((list) => (
-            <BoardColumn
-              key={list.id}
-              list={list}
-              onAddCard={onAddCard}
-              onRenameList={onRenameList}
-              onDeleteList={onDeleteList}
-              onCardClick={(cardId) => setSelectedCardId(cardId)}
-              onToggleComplete={handleToggleComplete}
-            />
-          ))}
+          {lists.map((list) => {
+            const filteredCards = filterCards(list.cards);
+            return (
+              <BoardColumn
+                key={list.id}
+                list={list}
+                filteredCards={filteredCards}
+                isAnyFilterActive={isAnyFilterActive}
+                onAddCard={onAddCard}
+                onRenameList={onRenameList}
+                onDeleteList={onDeleteList}
+                onCardClick={(cardId) => setSelectedCardId(cardId)}
+                onToggleComplete={handleToggleComplete}
+              />
+            );
+          })}
 
           {/* Add List Inline Panel */}
           <div className="w-64 shrink-0">
@@ -241,7 +250,7 @@ export function BoardCanvas({
               <form
                 ref={formRef}
                 onSubmit={handleSubmit}
-                className="bg-neutral-800/90 backdrop-blur-sm rounded-xl p-3 space-y-2.5 animate-in fade-in duration-150"
+                className="bg-neutral-900/90 backdrop-blur-sm rounded-xl p-3 space-y-2.5 animate-in fade-in duration-150"
               >
                 <Input
                   ref={inputRef}
@@ -274,7 +283,7 @@ export function BoardCanvas({
             ) : (
               <button
                 onClick={() => setIsAddingList(true)}
-                className="flex items-center gap-2 w-full px-3 py-2.5 bg-neutral-800/70 hover:bg-neutral-800/90 backdrop-blur-sm rounded-xl text-sm font-medium text-neutral-300 hover:text-white transition-all duration-150"
+                className="flex items-center gap-2 w-full px-3 py-2.5 bg-neutral-900/70 hover:bg-neutral-900/90 backdrop-blur-sm rounded-xl text-sm font-medium text-neutral-300 hover:text-white transition-all duration-150"
               >
                 <Plus className="h-4 w-4" />
                 <span>Add another list</span>

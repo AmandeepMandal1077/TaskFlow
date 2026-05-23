@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { ListWithCards } from "@/lib/hooks/useBoards";
+import { CardWithRelations } from "@/server/queries/card";
 import {
   Plus,
   X,
@@ -23,6 +24,8 @@ import { BoardCard } from "./board-card";
 
 interface BoardColumnProps {
   list: ListWithCards;
+  filteredCards: CardWithRelations[];
+  isAnyFilterActive: boolean;
   onAddCard: (
     listId: string,
     cardData: { title: string; description?: string },
@@ -35,6 +38,8 @@ interface BoardColumnProps {
 
 export function BoardColumn({
   list,
+  filteredCards,
+  isAnyFilterActive,
   onAddCard,
   onRenameList,
   onDeleteList,
@@ -127,12 +132,16 @@ export function BoardColumn({
     }
   };
 
+  const totalCards = list.cards.length;
+  const matchedCards = filteredCards.length;
+  const showFilterIndicator = isAnyFilterActive;
+
   // Collapsed state: vertical strip with rotated title and card count
   if (isCollapsed) {
     return (
       <div
         ref={setNodeRef}
-        className="flex shrink-0 flex-col items-center bg-neutral-800/90 backdrop-blur-sm rounded-xl w-10 py-2 gap-2 self-start"
+        className="flex shrink-0 flex-col items-center bg-neutral-900/90 backdrop-blur-sm rounded-xl w-10 py-2 gap-2 self-start"
       >
         <button
           onClick={() => setIsCollapsed(false)}
@@ -158,7 +167,7 @@ export function BoardColumn({
               textOrientation: "mixed",
             }}
           >
-            {list.cards.length}
+            {showFilterIndicator ? `${matchedCards}/${totalCards}` : totalCards}
           </span>
         </div>
       </div>
@@ -168,7 +177,7 @@ export function BoardColumn({
   return (
     <div
       ref={setNodeRef}
-      className={`flex h-fit w-64 shrink-0 flex-col bg-neutral-800/90 backdrop-blur-sm rounded-xl max-h-[85vh] ${isOver ? "bg-blue-500/20" : ""}`}
+      className={`flex h-fit w-64 shrink-0 flex-col bg-neutral-900/90 backdrop-blur-sm rounded-xl max-h-[75vh] ${isOver ? "bg-blue-500/20" : ""}`}
     >
       {/* List Header */}
       <div className="relative flex items-center justify-between px-3 py-2.5">
@@ -212,7 +221,7 @@ export function BoardColumn({
             </button>
 
             {isMenuOpen && (
-              <div className="absolute right-0 top-8 z-50 w-48 rounded-lg border border-neutral-700 bg-neutral-800 p-1 shadow-xl animate-in fade-in slide-in-from-top-1 duration-100">
+              <div className="absolute right-0 top-8 z-50 w-48 rounded-lg border border-neutral-700 bg-neutral-900 p-1 shadow-xl animate-in fade-in slide-in-from-top-1 duration-100">
                 <button
                   onClick={() => {
                     setIsEditingTitle(true);
@@ -252,14 +261,23 @@ export function BoardColumn({
         </div>
       </div>
 
+      {/* Filter Indicator */}
+      {showFilterIndicator && (
+        <div className="px-3 pb-1.5">
+          <span className="text-[11px] font-medium text-blue-400">
+            {matchedCards} {matchedCards === 1 ? "card matches" : "cards match"} filter
+          </span>
+        </div>
+      )}
+
       {/* Cards Stack */}
 
       <SortableContext
-        items={list.cards.map((card) => card.id)}
+        items={filteredCards.map((card) => card.id)}
         strategy={verticalListSortingStrategy}
       >
         <div className="flex-1 overflow-y-auto px-2 pb-1 space-y-1.5 min-h-0">
-          {list.cards.map((card) => (
+          {filteredCards.map((card) => (
             <BoardCard 
               key={card.id} 
               card={card} 
@@ -267,6 +285,11 @@ export function BoardColumn({
               onToggleComplete={onToggleComplete}
             />
           ))}
+          {isAnyFilterActive && filteredCards.length === 0 && totalCards > 0 && (
+            <div className="px-2 py-4 text-center">
+              <p className="text-xs text-neutral-500">No cards match</p>
+            </div>
+          )}
         </div>
       </SortableContext>
 

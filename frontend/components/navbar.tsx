@@ -43,9 +43,6 @@ export const Navbar = ({
               <div className="truncate text-lg font-semibold tracking-[0.2em] text-white">
                 {boardTitle}
               </div>
-              <div
-                className={`mt-1 h-1 w-full rounded-full ${boardColor || "bg-neutral-600"}`}
-              />
             </div>
           </div>
           {onEditBoard && (

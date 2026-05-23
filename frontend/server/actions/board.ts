@@ -6,6 +6,7 @@ type CreateBoardInput = {
   title: string;
   description?: string;
   color?: string;
+  image_url?: string;
 };
 
 export async function createBoardWithDefaultLists(
@@ -28,7 +29,7 @@ export async function getBoardWithLists(boardId: string) {
 
 export async function updateBoardWithId(
   boardId: string,
-  updateData: Partial<{ title: string; description: string; color: string }>,
+  updateData: Partial<{ title: string; description: string; color: string; image_url: string | null }>,
 ) {
   return boardService.updateBoardWithId(boardId, updateData);
 }

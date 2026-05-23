@@ -45,13 +45,54 @@ async function main() {
     data: {
       title: "TaskFlow MVP Development",
       description: "Main board for TaskFlow project",
-      color: "bg-blue-500",
+      color: "bg-blue-600",
       user_id: user1.id,
       lists: {
         create: [
           { title: "To Do", order: 0 },
           { title: "In Progress", order: 1 },
           { title: "Done", order: 2 },
+        ],
+      },
+    },
+    include: {
+      lists: true,
+    },
+  });
+
+  const board2 = await prisma.board.create({
+    data: {
+      title: "Marketing Campaign Q3",
+      description: "Planning and execution for Q3 marketing",
+      color: "",
+      image_url: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1920&auto=format&fit=crop",
+      user_id: user1.id,
+      lists: {
+        create: [
+          { title: "Ideas", order: 0 },
+          { title: "Drafting", order: 1 },
+          { title: "Review", order: 2 },
+          { title: "Published", order: 3 },
+        ],
+      },
+    },
+    include: {
+      lists: true,
+    },
+  });
+
+  const board3 = await prisma.board.create({
+    data: {
+      title: "Personal Goals",
+      description: "My personal to-dos and targets",
+      color: "",
+      image_url: "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1920&auto=format&fit=crop",
+      user_id: user1.id,
+      lists: {
+        create: [
+          { title: "This Week", order: 0 },
+          { title: "Next Month", order: 1 },
+          { title: "Long Term", order: 2 },
         ],
       },
     },
@@ -147,6 +188,72 @@ async function main() {
       list_id: todoList.id,
       order: 1,
       labels: { connect: [{ id: createdLabels[4].id }] },
+    },
+  });
+
+  // Fetch lists for Board 2
+  const b2Ideas = board2.lists.find((l) => l.title === "Ideas")!;
+  const b2Drafting = board2.lists.find((l) => l.title === "Drafting")!;
+  const b2Review = board2.lists.find((l) => l.title === "Review")!;
+
+  // Cards for Board 2
+  await prisma.card.create({
+    data: {
+      title: "Brainstorm slogan",
+      list_id: b2Ideas.id,
+      order: 0,
+    },
+  });
+  await prisma.card.create({
+    data: {
+      title: "Target audience research",
+      list_id: b2Ideas.id,
+      order: 1,
+    },
+  });
+  await prisma.card.create({
+    data: {
+      title: "Write blog post draft",
+      list_id: b2Drafting.id,
+      order: 0,
+      assignees: { connect: [{ id: user2.id }] },
+    },
+  });
+  await prisma.card.create({
+    data: {
+      title: "Review ad copy",
+      list_id: b2Review.id,
+      order: 0,
+      assignees: { connect: [{ id: user1.id }] },
+      due_date: new Date(),
+    },
+  });
+
+  // Fetch lists for Board 3
+  const b3ThisWeek = board3.lists.find((l) => l.title === "This Week")!;
+  const b3NextMonth = board3.lists.find((l) => l.title === "Next Month")!;
+
+  // Cards for Board 3
+  await prisma.card.create({
+    data: {
+      title: "Buy groceries",
+      list_id: b3ThisWeek.id,
+      order: 0,
+    },
+  });
+  await prisma.card.create({
+    data: {
+      title: "Call mom",
+      list_id: b3ThisWeek.id,
+      order: 1,
+      due_date: new Date(new Date().getTime() + 1 * 24 * 60 * 60 * 1000), // Tomorrow
+    },
+  });
+  await prisma.card.create({
+    data: {
+      title: "Plan vacation",
+      list_id: b3NextMonth.id,
+      order: 0,
     },
   });
 

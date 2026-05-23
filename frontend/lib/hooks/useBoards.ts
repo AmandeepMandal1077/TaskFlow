@@ -43,6 +43,7 @@ export function useBoards() {
     title: string;
     description?: string;
     color?: string;
+    image_url?: string;
   }) => {
     try {
       const newBoard = await createBoardWithDefaultLists(email, boardData);
@@ -90,6 +91,7 @@ export function useBoard(boardId: string) {
       title?: string;
       description?: string;
       color?: string;
+      image_url?: string | null;
     },
   ) {
     try {
