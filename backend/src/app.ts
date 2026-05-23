@@ -3,6 +3,8 @@ import type { Express, Request, Response } from 'express';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { ApiError } from './utils/ApiError.js';
 import dotenv from 'dotenv'
+import boardRoutes from './modules/board/board.route.js';
+import prisma from './lib/prisma.js';
 
 dotenv.config();
 
@@ -39,6 +41,9 @@ app.get("/health", async (_req: Request, res: Response) => {
     });
   }
 });
+
+// Feature routes
+app.use('/api/boards', boardRoutes);
 
 // Unknown routes handler
 app.use((req: Request, res: Response, next) => {
