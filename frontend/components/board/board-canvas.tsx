@@ -103,11 +103,11 @@ export function BoardCanvas({
 
     setLists((prev: ListWithCards[]) => {
       const sourceList = prev.find((list) =>
-        list.cards.some((card) => card.id === activeId),
+        list.cards.some((card: CardWithRelations) => card.id === activeId),
       );
 
       let targetList = prev.find((list) =>
-        list.cards.some((card) => card.id === overId),
+        list.cards.some((card: CardWithRelations) => card.id === overId),
       );
       if (!targetList) {
         targetList = prev.find((list) => list.id === overId);
@@ -121,10 +121,10 @@ export function BoardCanvas({
 
       if (sourceList.id === targetList.id) {
         const activeIndex = sourceList.cards.findIndex(
-          (card) => card.id === activeId,
+          (card: CardWithRelations) => card.id === activeId,
         );
         const overIndex = sourceList.cards.findIndex(
-          (card) => card.id === overId,
+          (card: CardWithRelations) => card.id === overId,
         );
 
         if (overIndex === -1 || activeIndex === overIndex) return prev;
@@ -136,10 +136,10 @@ export function BoardCanvas({
         return newLists;
       } else {
         const activeIndex = sourceList.cards.findIndex(
-          (card) => card.id === activeId,
+          (card: CardWithRelations) => card.id === activeId,
         );
         const overIndex = targetList.cards.findIndex(
-          (card) => card.id === overId,
+          (card: CardWithRelations) => card.id === overId,
         );
         const insertIndex = overIndex >= 0 ? overIndex : targetList.cards.length;
 
@@ -187,7 +187,7 @@ export function BoardCanvas({
       .filter((list) => affectedListIds.current.has(list.id))
       .map((list) => ({
         listId: list.id,
-        cardIds: list.cards.map((card) => card.id),
+        cardIds: list.cards.map((card: CardWithRelations) => card.id),
       }));
 
     affectedListIds.current.clear();
