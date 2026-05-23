@@ -1,7 +1,6 @@
 "use client";
 
-import type { Board, List } from "@/generated/prisma/client";
-import type { CardWithRelations } from "@/lib/api/types";
+import type { CardWithRelations, Board, List } from "@/lib/api/types";
 import {
   createBoardWithDefaultLists,
   getBoardsByEmail,

@@ -8,8 +8,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, X, Tag, Users, CalendarClock } from "lucide-react";
 import { getAllLabels } from "@/lib/api/label";
 import { getAllUsers } from "@/lib/api/user";
-import type { Label, User } from "@/generated/prisma/client";
 import type { CardFilters, DueDateFilter } from "@/lib/hooks/useCardFilters";
+import type { Label, User } from "@/lib/api/types";
 
 interface CardFilterPanelProps {
   filters: CardFilters;
@@ -98,11 +98,10 @@ export function CardFilterPanel({
                   tabIndex={0}
                   onClick={() => onToggleLabel(label.id)}
                   onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggleLabel(label.id); } }}
-                  className={`flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors cursor-pointer ${
-                    filters.labelIds.includes(label.id)
+                  className={`flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors cursor-pointer ${filters.labelIds.includes(label.id)
                       ? "bg-neutral-700"
                       : "hover:bg-neutral-700/50"
-                  }`}
+                    }`}
                 >
                   <Checkbox
                     checked={filters.labelIds.includes(label.id)}
@@ -141,11 +140,10 @@ export function CardFilterPanel({
                   tabIndex={0}
                   onClick={() => onToggleMember(user.id)}
                   onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggleMember(user.id); } }}
-                  className={`flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors cursor-pointer ${
-                    filters.memberIds.includes(user.id)
+                  className={`flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors cursor-pointer ${filters.memberIds.includes(user.id)
                       ? "bg-neutral-700"
                       : "hover:bg-neutral-700/50"
-                  }`}
+                    }`}
                 >
                   <Checkbox
                     checked={filters.memberIds.includes(user.id)}
@@ -181,11 +179,10 @@ export function CardFilterPanel({
                   tabIndex={0}
                   onClick={() => onToggleDueDate(opt.value)}
                   onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onToggleDueDate(opt.value); } }}
-                  className={`flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors cursor-pointer ${
-                    filters.dueDateFilters.includes(opt.value)
+                  className={`flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors cursor-pointer ${filters.dueDateFilters.includes(opt.value)
                       ? "bg-neutral-700"
                       : "hover:bg-neutral-700/50"
-                  }`}
+                    }`}
                 >
                   <Checkbox
                     checked={filters.dueDateFilters.includes(opt.value)}

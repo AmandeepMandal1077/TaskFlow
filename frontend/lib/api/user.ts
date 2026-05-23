@@ -1,5 +1,5 @@
 import { apiClient, ApiResponse } from './apiClient';
-import type { User } from '@/generated/prisma/client';
+import type { User } from '@/lib/api/types';
 
 export async function getUserByEmail(email: string) {
   const { data } = await apiClient.get<ApiResponse<User>>(`/users/email/${email}`);

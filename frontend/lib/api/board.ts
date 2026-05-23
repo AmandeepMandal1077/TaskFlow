@@ -1,5 +1,5 @@
 import { apiClient, ApiResponse } from './apiClient';
-import type { Board } from '@/generated/prisma/client';
+import type { Board } from '@/lib/api/types';
 import type { ListWithCards } from '../hooks/useBoards';
 
 export async function getBoardsByEmail(email: string) {

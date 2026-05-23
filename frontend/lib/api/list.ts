@@ -1,5 +1,5 @@
 import { apiClient, ApiResponse } from './apiClient';
-import type { List } from '@/generated/prisma/client';
+import type { List } from '@/lib/api/types';
 
 export async function getListsByBoardId(boardId: string) {
   const { data } = await apiClient.get<ApiResponse<List[]>>(`/lists/board/${boardId}`);
