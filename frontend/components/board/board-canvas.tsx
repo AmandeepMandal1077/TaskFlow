@@ -86,7 +86,7 @@ export function BoardCanvas({
       setActiveCard(card);
       affectedListIds.current.clear();
       // Record the starting list
-      const startList = lists.find((l) => l.cards.some((c) => c.id === cardId));
+      const startList = lists.find((l) => l.cards.some((c: CardWithRelations) => c.id === cardId));
       if (startList) affectedListIds.current.add(startList.id);
     }
   }
@@ -126,7 +126,7 @@ export function BoardCanvas({
         const overIndex = sourceList.cards.findIndex(
           (card) => card.id === overId,
         );
-        
+
         if (overIndex === -1 || activeIndex === overIndex) return prev;
 
         const newLists = prev.map((l) => ({ ...l, cards: [...l.cards] }));
@@ -349,7 +349,7 @@ export function BoardCanvas({
         </div>
       </DndContext>
 
-      <CardDetailDialog 
+      <CardDetailDialog
         card={lists.flatMap(l => l.cards).find(c => c.id === selectedCardId) || null}
         isOpen={!!selectedCardId}
         onClose={() => setSelectedCardId(null)}
