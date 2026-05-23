@@ -1,5 +1,6 @@
 import prisma from '../../lib/prisma.js';
 import type { Prisma } from '../../generated/prisma/client';
+import { cardInclude } from '../card/card.repository.js';
 
 export const boardRepository = {
   async getBoardsByUserId(userId: string) {
@@ -15,29 +16,25 @@ export const boardRepository = {
   },
 
   async getBoardWithLists(boardId: string) {
-    const board = await this.getBoardById(boardId);
-    if (!board) return null;
-
-    const lists = await prisma.list.findMany({
-      where: { board_id: boardId },
-      orderBy: { order: 'asc' },
-    });
-
-    const cards = await prisma.card.findMany({
-      where: {
-        list: {
-          board_id: boardId,
+    const board = await prisma.board.findUnique({
+      where: { id: boardId },
+      include: {
+        lists: {
+          orderBy: { order: 'asc' },
+          include: {
+            cards: {
+              orderBy: { order: 'asc' },
+              include: cardInclude,
+            },
+          },
         },
       },
-      orderBy: { order: 'asc' },
     });
 
-    const listsWithCards = lists.map((list) => ({
-      ...list,
-      cards: cards.filter((card) => card.list_id === list.id),
-    }));
+    if (!board) return null;
 
-    return { board, listsWithCards };
+    const { lists, ...boardData } = board;
+    return { board: boardData, listsWithCards: lists };
   },
 
   async createBoardWithDefaultLists(data: {
@@ -54,20 +51,19 @@ export const boardRepository = {
         description: data.description ?? null,
         color: data.color ?? undefined,
         image_url: data.image_url ?? null,
+        lists: {
+          create: [
+            { title: 'To Do', order: 0 },
+            { title: 'In Progress', order: 1 },
+            { title: 'Done', order: 2 },
+          ],
+        },
       },
+      include: { lists: true },
     });
 
-    const defaultLists = [
-      { title: 'To Do', board_id: board.id, order: 0 },
-      { title: 'In Progress', board_id: board.id, order: 1 },
-      { title: 'Done', board_id: board.id, order: 2 },
-    ];
-
-    const createdLists = await Promise.all(
-      defaultLists.map((list) => prisma.list.create({ data: list }))
-    );
-
-    return { board, lists: createdLists };
+    const { lists, ...boardData } = board;
+    return { board: boardData, lists };
   },
 
   async updateBoard(boardId: string, updateData: Prisma.BoardUpdateInput) {
