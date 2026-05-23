@@ -23,3 +23,7 @@ export async function updateList(
 export async function deleteList(listId: string) {
   return await listService.deleteList(listId);
 }
+
+export async function reorderLists(items: { id: string; order: number }[]) {
+  return await listService.reorderLists(items);
+}

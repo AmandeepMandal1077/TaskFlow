@@ -15,7 +15,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useDroppable } from "@dnd-kit/core";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import {
   SortableContext,
   verticalListSortingStrategy,
@@ -34,6 +35,8 @@ interface BoardColumnProps {
   onDeleteList: (listId: string) => Promise<any>;
   onCardClick?: (cardId: string) => void;
   onToggleComplete?: (cardId: string, isComplete: boolean) => void;
+  initialIsCollapsed?: boolean;
+  isTargetList?: boolean;
 }
 
 export function BoardColumn({
@@ -45,19 +48,40 @@ export function BoardColumn({
   onDeleteList,
   onCardClick,
   onToggleComplete,
+  initialIsCollapsed = false,
+  isTargetList = false,
 }: BoardColumnProps) {
   const [isAddingCard, setIsAddingCard] = useState(false);
   const [newCardTitle, setNewCardTitle] = useState("");
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState(list.title);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(initialIsCollapsed);
 
   const menuRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const cardInputRef = useRef<HTMLTextAreaElement>(null);
 
-  const { setNodeRef, isOver } = useDroppable({ id: list.id });
+  const {
+    setNodeRef,
+    attributes,
+    listeners,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: list.id,
+    data: {
+      type: "List",
+      list,
+      isCollapsed,
+    },
+  });
+
+  const style = {
+    transition,
+    transform: CSS.Translate.toString(transform),
+  };
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -141,7 +165,10 @@ export function BoardColumn({
     return (
       <div
         ref={setNodeRef}
-        className="flex shrink-0 flex-col items-center bg-neutral-900/90 backdrop-blur-sm rounded-xl w-10 py-2 gap-2 self-start"
+        style={style}
+        {...attributes}
+        {...listeners}
+        className={`flex shrink-0 flex-col items-center bg-neutral-900/90 backdrop-blur-sm rounded-xl w-10 py-2 gap-2 self-start ${isDragging ? "opacity-50 ring-2 ring-blue-500" : isTargetList ? "ring-2 ring-blue-500/50" : ""}`}
       >
         <button
           onClick={() => setIsCollapsed(false)}
@@ -177,10 +204,15 @@ export function BoardColumn({
   return (
     <div
       ref={setNodeRef}
-      className={`flex h-fit w-64 shrink-0 flex-col bg-neutral-900/90 backdrop-blur-sm rounded-xl max-h-[75vh] ${isOver ? "bg-blue-500/20" : ""}`}
+      style={style}
+      className={`flex h-fit w-64 shrink-0 flex-col bg-neutral-900/90 backdrop-blur-sm rounded-xl max-h-[75vh] ${isDragging ? "opacity-50 ring-2 ring-blue-500" : isTargetList ? "ring-2 ring-blue-500/50" : ""}`}
     >
       {/* List Header */}
-      <div className="relative flex items-center justify-between px-3 py-2.5">
+      <div 
+        className="relative flex items-center justify-between px-3 py-2.5 cursor-grab active:cursor-grabbing"
+        {...attributes}
+        {...listeners}
+      >
         <div className="flex-1 min-w-0 mr-1">
           {isEditingTitle ? (
             <Input
