@@ -250,7 +250,7 @@ export function BoardCanvas({
               <form
                 ref={formRef}
                 onSubmit={handleSubmit}
-                className="bg-neutral-800/90 backdrop-blur-sm rounded-xl p-3 space-y-2.5 animate-in fade-in duration-150"
+                className="bg-neutral-900/90 backdrop-blur-sm rounded-xl p-3 space-y-2.5 animate-in fade-in duration-150"
               >
                 <Input
                   ref={inputRef}
@@ -283,7 +283,7 @@ export function BoardCanvas({
             ) : (
               <button
                 onClick={() => setIsAddingList(true)}
-                className="flex items-center gap-2 w-full px-3 py-2.5 bg-neutral-800/70 hover:bg-neutral-800/90 backdrop-blur-sm rounded-xl text-sm font-medium text-neutral-300 hover:text-white transition-all duration-150"
+                className="flex items-center gap-2 w-full px-3 py-2.5 bg-neutral-900/70 hover:bg-neutral-900/90 backdrop-blur-sm rounded-xl text-sm font-medium text-neutral-300 hover:text-white transition-all duration-150"
               >
                 <Plus className="h-4 w-4" />
                 <span>Add another list</span>

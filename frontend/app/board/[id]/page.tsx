@@ -11,11 +11,27 @@ import { useDebounce } from "@/lib/hooks/useDebounce";
 import { BoardCanvas } from "@/components/board/board-canvas";
 import { CardFilterPanel } from "@/components/board/card-filter-panel";
 import { DialogTitle } from "@radix-ui/react-dialog";
-import { ArrowLeftRight, Search } from "lucide-react";
+import { ArrowLeftRight, Search, Check } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useRef, useState } from "react";
 import type React from "react";
 import Link from "next/link";
+
+const COLORS = [
+  "bg-blue-600",
+  "bg-orange-500",
+  "bg-green-600",
+  "bg-red-600",
+  "bg-purple-600",
+  "bg-pink-600",
+];
+
+const DEFAULT_IMAGES = [
+  "https://images.unsplash.com/photo-1542273917363-3b1817f69a5d?q=80&w=1920&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1920&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1920&auto=format&fit=crop",
+  "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1920&auto=format&fit=crop",
+];
 
 export default function BoardPage() {
   const currentUserName = "Amandeep Mandal";
@@ -38,6 +54,7 @@ export default function BoardPage() {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newColor, setNewColor] = useState("");
+  const [newImage, setNewImage] = useState("");
   const [isSwitchBoardOpen, setIsSwitchBoardOpen] = useState(false);
   const [boardSearchQuery, setBoardSearchQuery] = useState("");
   const debouncedBoardSearch = useDebounce(boardSearchQuery, 300);
@@ -52,7 +69,8 @@ export default function BoardPage() {
     try {
       await updateBoard(board.id, {
         title: newTitle,
-        color: newColor || board.color,
+        color: newColor || undefined,
+        image_url: newImage || null,
       });
     } catch (error) {
       console.error("Error updating board:", error);
@@ -69,14 +87,18 @@ export default function BoardPage() {
 
   const boardTitle = board?.title || "Board";
   return (
-    <div className="h-screen w-screen flex flex-col bg-neutral-900 text-white overflow-hidden">
+    <div
+      className={`h-screen w-screen flex flex-col text-white overflow-hidden bg-cover bg-center ${board?.image_url ? "bg-neutral-900" : (board?.color || "bg-neutral-900")}`}
+      style={board?.image_url ? { backgroundImage: `url(${board.image_url})` } : undefined}
+    >
       <Navbar
         username={currentUserName}
         boardTitle={boardTitle}
-        boardColor={board?.color || "bg-neutral-300"}
+        boardColor={board?.image_url ? "bg-black/20 backdrop-blur-sm" : (board?.color || "bg-neutral-800")}
         onEditBoard={() => {
           setNewTitle(board?.title || "");
-          setNewColor(board?.color || "");
+          setNewColor(board?.image_url ? "" : (board?.color || COLORS[0]));
+          setNewImage(board?.image_url || "");
           setIsEditingTitle(true);
         }}
         onFilterClick={() => setIsFilterOpen(!isFilterOpen)}
@@ -106,7 +128,7 @@ export default function BoardPage() {
       )}
 
       <Dialog open={isEditingTitle} onOpenChange={setIsEditingTitle}>
-        <DialogContent className="rounded-2xl border border-neutral-700 bg-neutral-800 p-0 shadow-xl sm:max-w-lg text-white">
+        <DialogContent className="rounded-2xl border border-neutral-700 bg-neutral-900 p-0 shadow-xl sm:max-w-lg text-white">
           <DialogHeader className="border-b border-neutral-700 px-6 py-5">
             <DialogTitle className="text-lg font-semibold tracking-tight text-neutral-100">
               Edit Board
@@ -130,38 +152,42 @@ export default function BoardPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label
-                htmlFor="color"
-                className="text-sm font-medium text-neutral-300"
-              >
-                Color
-              </Label>
-              <div className="grid grid-cols-6 gap-3 sm:grid-cols-6">
-                {[
-                  "bg-red-500",
-                  "bg-green-500",
-                  "bg-blue-500",
-                  "bg-yellow-500",
-                  "bg-pink-500",
-                  "bg-indigo-500",
-                  "bg-gray-500",
-                  "bg-teal-500",
-                  "bg-orange-500",
-                  "bg-purple-500",
-                  "bg-cyan-500",
-                  "bg-lime-500",
-                ].map((color) => (
+              <Label className="text-sm font-medium text-neutral-300">Background</Label>
+
+              {/* Images */}
+              <div className="grid grid-cols-4 gap-1.5 mb-1.5">
+                {DEFAULT_IMAGES.map((img) => (
                   <button
-                    key={color}
+                    key={img}
                     type="button"
-                    className={`h-8 w-8 rounded-full border border-neutral-700 shadow-sm transition-transform hover:scale-105 ${color} ${
-                      newColor === color
-                        ? "ring-2 ring-white ring-offset-2 ring-offset-neutral-800"
-                        : "ring-1 ring-white/10 ring-offset-0"
-                    }`}
-                    onClick={() => setNewColor(color)}
-                    aria-label={color}
-                  />
+                    onClick={() => { setNewImage(img); setNewColor(""); }}
+                    className="relative h-10 rounded-[4px] bg-cover bg-center hover:opacity-80 transition-opacity overflow-hidden group"
+                    style={{ backgroundImage: `url(${img})` }}
+                  >
+                    {newImage === img && (
+                      <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                        <Check className="h-4 w-4 text-white" />
+                      </div>
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {/* Colors */}
+              <div className="grid grid-cols-6 gap-1.5">
+                {COLORS.map((c) => (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => { setNewColor(c); setNewImage(""); }}
+                    className={`relative h-8 rounded-[4px] hover:opacity-80 transition-opacity ${c}`}
+                  >
+                    {newColor === c && (
+                      <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
+                        <Check className="h-3 w-3 text-white" />
+                      </div>
+                    )}
+                  </button>
                 ))}
               </div>
             </div>
@@ -187,7 +213,7 @@ export default function BoardPage() {
 
       {/* Switch Boards Dialog */}
       <Dialog open={isSwitchBoardOpen} onOpenChange={setIsSwitchBoardOpen}>
-        <DialogContent className="rounded-2xl border border-neutral-700 bg-neutral-800 p-0 shadow-xl sm:max-w-2xl text-white top-[15vh] translate-y-0">
+        <DialogContent className="rounded-2xl border border-neutral-700 bg-neutral-900 p-0 shadow-xl sm:max-w-2xl text-white top-[15vh] translate-y-0">
           <DialogHeader className="border-b border-neutral-700 px-6 py-5">
             <DialogTitle className="text-lg font-semibold tracking-tight text-neutral-100">
               Switch Board
@@ -212,26 +238,23 @@ export default function BoardPage() {
                   <p className="text-sm text-neutral-500">No boards found.</p>
                 </div>
               ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 p-2">
                   {filteredBoards.map((b) => (
                     <Link
                       key={b.id}
                       href={`/board/${b.id}`}
                       onClick={() => setIsSwitchBoardOpen(false)}
                     >
-                      <Card className="h-36 gap-0 overflow-hidden rounded-xl border-neutral-700 bg-neutral-800 p-0 transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-500 hover:shadow-md cursor-pointer">
+                      <Card className="h-24 gap-0 overflow-hidden rounded-xl border-neutral-700 bg-neutral-800 p-0 transition-all duration-200 hover:-translate-y-0.5 hover:border-neutral-500 hover:shadow-md cursor-pointer">
                         <CardHeader
-                          className={`h-[75%] border-b border-neutral-700 p-0 ${
-                            b.color || "bg-neutral-600"
-                          }`}
+                          className={`h-[75%] border-b border-neutral-700 p-0 bg-cover bg-center ${!b.image_url ? (b.color || "bg-neutral-600") : ""
+                            }`}
+                          style={b.image_url ? { backgroundImage: `url(${b.image_url})` } : undefined}
                         />
                         <CardContent className="flex h-[25%] items-center justify-between gap-3 p-3">
-                          <CardTitle className="line-clamp-2 text-sm font-semibold tracking-tight text-neutral-200">
+                          <CardTitle className="truncate text-xs tracking-tight text-neutral-200">
                             {b.title}
                           </CardTitle>
-                          <div className="shrink-0 text-right text-[10px] leading-tight text-neutral-500">
-                            <p>{new Date(b.updated_at).toLocaleDateString()}</p>
-                          </div>
                         </CardContent>
                       </Card>
                     </Link>

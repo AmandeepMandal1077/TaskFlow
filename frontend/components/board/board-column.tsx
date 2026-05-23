@@ -141,7 +141,7 @@ export function BoardColumn({
     return (
       <div
         ref={setNodeRef}
-        className="flex shrink-0 flex-col items-center bg-neutral-800/90 backdrop-blur-sm rounded-xl w-10 py-2 gap-2 self-start"
+        className="flex shrink-0 flex-col items-center bg-neutral-900/90 backdrop-blur-sm rounded-xl w-10 py-2 gap-2 self-start"
       >
         <button
           onClick={() => setIsCollapsed(false)}
@@ -177,7 +177,7 @@ export function BoardColumn({
   return (
     <div
       ref={setNodeRef}
-      className={`flex h-fit w-64 shrink-0 flex-col bg-neutral-800/90 backdrop-blur-sm rounded-xl max-h-[75vh] ${isOver ? "bg-blue-500/20" : ""}`}
+      className={`flex h-fit w-64 shrink-0 flex-col bg-neutral-900/90 backdrop-blur-sm rounded-xl max-h-[75vh] ${isOver ? "bg-blue-500/20" : ""}`}
     >
       {/* List Header */}
       <div className="relative flex items-center justify-between px-3 py-2.5">
@@ -221,7 +221,7 @@ export function BoardColumn({
             </button>
 
             {isMenuOpen && (
-              <div className="absolute right-0 top-8 z-50 w-48 rounded-lg border border-neutral-700 bg-neutral-800 p-1 shadow-xl animate-in fade-in slide-in-from-top-1 duration-100">
+              <div className="absolute right-0 top-8 z-50 w-48 rounded-lg border border-neutral-700 bg-neutral-900 p-1 shadow-xl animate-in fade-in slide-in-from-top-1 duration-100">
                 <button
                   onClick={() => {
                     setIsEditingTitle(true);

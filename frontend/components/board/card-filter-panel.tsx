@@ -47,7 +47,7 @@ export function CardFilterPanel({
   }, []);
 
   return (
-    <div className="w-80 rounded-xl border border-neutral-700 bg-neutral-800 shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200">
+    <div className="w-80 rounded-xl border border-neutral-700 bg-neutral-900 shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-neutral-700 px-4 py-3">
         <h3 className="text-sm font-semibold text-neutral-100">Filters</h3>
