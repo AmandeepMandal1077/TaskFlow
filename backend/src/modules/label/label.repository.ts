@@ -19,7 +19,7 @@ export const labelRepository = {
       return labels;
     }
 
-    await prisma.label.createMany({ data: defaultLabels });
+    await prisma.label.createMany({ data: defaultLabels, skipDuplicates: true });
     return await prisma.label.findMany({
       orderBy: { name: 'asc' },
     });

@@ -21,7 +21,7 @@ export const userRepository = {
       return users;
     }
 
-    await prisma.user.createMany({ data: defaultUsers });
+    await prisma.user.createMany({ data: defaultUsers, skipDuplicates: true });
     return await prisma.user.findMany({
       orderBy: { name: 'asc' },
     });
