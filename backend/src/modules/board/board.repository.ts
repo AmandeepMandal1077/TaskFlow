@@ -72,4 +72,10 @@ export const boardRepository = {
       data: updateData,
     });
   },
+
+  async deleteBoard(boardId: string) {
+    return await prisma.board.delete({
+      where: { id: boardId },
+    });
+  },
 };

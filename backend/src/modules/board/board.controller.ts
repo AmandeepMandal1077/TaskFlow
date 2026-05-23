@@ -58,3 +58,21 @@ export const updateBoard = asyncHandler(async (req: Request, res: Response) => {
 
   res.status(200).json(new ApiResponse(200, updatedBoard, 'Board updated successfully'));
 });
+
+export const deleteBoard = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const userId = req.user!.id;
+
+  const board = await boardRepository.getBoardById(id as string);
+  if (!board) {
+    throw new ApiError(404, 'Board not found');
+  }
+
+  if (board.user_id !== userId) {
+    throw new ApiError(403, 'Unauthorized access to board');
+  }
+
+  await boardRepository.deleteBoard(id as string);
+
+  res.status(200).json(new ApiResponse(200, null, 'Board deleted successfully'));
+});

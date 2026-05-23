@@ -14,6 +14,7 @@ router.route('/')
 
 router.route('/:id')
   .get(validateResource(boardIdParamSchema), boardController.getBoard)
-  .patch(validateResource(updateBoardSchema), boardController.updateBoard);
+  .patch(validateResource(updateBoardSchema), boardController.updateBoard)
+  .delete(validateResource(boardIdParamSchema), boardController.deleteBoard);
 
 export default router;

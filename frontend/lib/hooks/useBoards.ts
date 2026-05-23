@@ -6,6 +6,7 @@ import {
   getBoardsByEmail,
   getBoardWithLists,
   updateBoardWithId,
+  deleteBoard as deleteBoardAction,
 } from "@/lib/api/board";
 import { createCard, moveCard as moveCardAction, updateCard as updateCardAction, deleteCard as deleteCardAction } from "@/lib/api/card";
 import { createList, updateList, deleteList } from "@/lib/api/list";
@@ -98,6 +99,15 @@ export function useBoard(boardId: string) {
       setBoard(updatedBoard);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to update board");
+    }
+  }
+
+  async function deleteBoard(boardId: string) {
+    try {
+      await deleteBoardAction(boardId);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete board");
+      throw err;
     }
   }
 
@@ -249,6 +259,7 @@ export function useBoard(boardId: string) {
     error,
     setLists,
     updateBoard,
+    deleteBoard,
     createCardInList,
     createListInBoard,
     updateListInBoard,

@@ -6,6 +6,7 @@ import { BoardColumn } from "./board-column";
 import { Plus, X } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
+  closestCorners,
   DndContext,
   DragEndEvent,
   DragOverEvent,
@@ -22,6 +23,7 @@ import { reorderCards, updateCard } from "@/lib/api/card";
 import { reorderLists } from "@/lib/api/list";
 import { CardDetailDialog } from "./card-detail-dialog";
 import { horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
+import { cornersOfRectangle } from "@dnd-kit/core/dist/utilities/algorithms/helpers";
 
 interface BoardCanvasProps {
   listId: string;
@@ -257,7 +259,7 @@ export function BoardCanvas({
       {/* Lists */}
       <DndContext
         sensors={sensors}
-        collisionDetection={rectIntersection}
+        collisionDetection={closestCorners}
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}

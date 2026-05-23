@@ -12,11 +12,12 @@ import { BoardCanvas } from "@/components/board/board-canvas";
 import { CardFilterPanel } from "@/components/board/card-filter-panel";
 import { DialogTitle } from "@radix-ui/react-dialog";
 import { ArrowLeftRight, Search, Check } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import type React from "react";
 import Link from "next/link";
 import BoardLoading from "./loading";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 const COLORS = [
   "bg-blue-600",
@@ -40,6 +41,7 @@ export default function BoardPage() {
   const {
     board,
     updateBoard,
+    deleteBoard,
     lists,
     createCardInList,
     createListInBoard,
@@ -58,6 +60,8 @@ export default function BoardPage() {
   const [newColor, setNewColor] = useState("");
   const [newImage, setNewImage] = useState("");
   const [isSwitchBoardOpen, setIsSwitchBoardOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const router = useRouter();
   const [boardSearchQuery, setBoardSearchQuery] = useState("");
   const debouncedBoardSearch = useDebounce(boardSearchQuery, 300);
 
@@ -78,6 +82,16 @@ export default function BoardPage() {
       console.error("Error updating board:", error);
     } finally {
       setIsEditingTitle(false);
+    }
+  }
+
+  async function handleDeleteBoard() {
+    if (!board) return;
+    try {
+      await deleteBoard(board.id);
+      router.push("/dashboard");
+    } catch (error) {
+      console.error("Error deleting board:", error);
     }
   }
 
@@ -107,6 +121,7 @@ export default function BoardPage() {
           setNewImage(board?.image_url || "");
           setIsEditingTitle(true);
         }}
+        onDeleteBoard={() => setIsDeleteDialogOpen(true)}
         onFilterClick={() => setIsFilterOpen(!isFilterOpen)}
         filterCount={cardFilters.activeFilterCount}
       />
@@ -132,6 +147,15 @@ export default function BoardPage() {
           </div>
         </>
       )}
+
+      <ConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleDeleteBoard}
+        title="Delete Board"
+        description="Are you sure you want to delete this board? This action cannot be undone and will delete all lists and cards inside it."
+        confirmText="Delete Board"
+      />
 
       <Dialog open={isEditingTitle} onOpenChange={setIsEditingTitle}>
         <DialogContent className="rounded-2xl border border-neutral-700 bg-neutral-900 p-0 shadow-xl sm:max-w-lg text-white">

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, Filter, MoreHorizontal } from "lucide-react";
+import { ArrowLeft, Filter, Edit2, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "./ui/button";
@@ -10,6 +10,7 @@ type NavbarProps = {
   boardTitle?: string;
   boardColor?: string;
   onEditBoard?: () => void;
+  onDeleteBoard?: () => void;
   onFilterClick?: () => void;
   filterCount?: number;
 };
@@ -19,6 +20,7 @@ export const Navbar = ({
   boardTitle,
   boardColor,
   onEditBoard,
+  onDeleteBoard,
   onFilterClick,
   filterCount,
 }: NavbarProps) => {
@@ -45,16 +47,28 @@ export const Navbar = ({
               </div>
             </div>
           </div>
-          {onEditBoard && (
-            <Button
-              onClick={onEditBoard}
-              variant="outline"
-              className="h-9 w-9 rounded-full border-neutral-600 bg-neutral-800 p-0 text-neutral-300 hover:bg-neutral-700 hover:text-white"
-              aria-label="Edit board"
-            >
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {onEditBoard && (
+              <Button
+                variant="outline"
+                className="h-9 w-9 rounded-full border-neutral-600 bg-neutral-800 p-0 text-neutral-300 hover:bg-neutral-700 hover:text-white"
+                onClick={onEditBoard}
+                aria-label="Edit board"
+              >
+                <Edit2 className="h-4 w-4" />
+              </Button>
+            )}
+            {onDeleteBoard && (
+              <Button
+                variant="outline"
+                className="h-9 w-9 rounded-full border-neutral-600 bg-neutral-800 p-0 text-red-400 hover:bg-neutral-700 hover:text-red-300"
+                onClick={onDeleteBoard}
+                aria-label="Delete board"
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
 
           <div className="ml-auto flex shrink-0 items-center gap-3">
             {onFilterClick && (

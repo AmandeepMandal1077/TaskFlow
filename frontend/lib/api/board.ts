@@ -28,3 +28,8 @@ export async function updateBoardWithId(
   const { data } = await apiClient.patch<ApiResponse<Board>>(`/boards/${boardId}`, updatedData);
   return data.data;
 }
+
+export async function deleteBoard(boardId: string) {
+  const { data } = await apiClient.delete<ApiResponse<null>>(`/boards/${boardId}`);
+  return data.data;
+}

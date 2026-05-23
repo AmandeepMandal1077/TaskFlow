@@ -22,6 +22,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { BoardCard } from "./board-card";
+import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
 interface BoardColumnProps {
   list: ListWithCards;
@@ -57,6 +58,7 @@ export function BoardColumn({
   const [editedTitle, setEditedTitle] = useState(list.title);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(initialIsCollapsed);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   const menuRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
@@ -208,7 +210,7 @@ export function BoardColumn({
       className={`flex h-fit w-64 shrink-0 flex-col bg-neutral-900/90 backdrop-blur-sm rounded-xl max-h-[75vh] ${isDragging ? "opacity-50 ring-2 ring-blue-500" : isTargetList ? "ring-2 ring-blue-500/50" : ""}`}
     >
       {/* List Header */}
-      <div 
+      <div
         className="relative flex items-center justify-between px-3 py-2.5 cursor-grab active:cursor-grabbing"
         {...attributes}
         {...listeners}
@@ -277,9 +279,7 @@ export function BoardColumn({
                 <div className="h-px bg-neutral-700 my-1" />
                 <button
                   onClick={() => {
-                    if (confirm("Are you sure you want to delete this list?")) {
-                      onDeleteList(list.id);
-                    }
+                    setIsDeleteDialogOpen(true);
                     setIsMenuOpen(false);
                   }}
                   className="flex items-center gap-2 w-full px-2.5 py-1.5 text-xs font-medium text-red-400 hover:bg-red-500/10 hover:text-red-300 rounded-md text-left transition-colors"
@@ -310,10 +310,10 @@ export function BoardColumn({
       >
         <div className="flex-1 overflow-y-auto px-2 pb-1 space-y-1.5 min-h-0">
           {filteredCards.map((card) => (
-            <BoardCard 
-              key={card.id} 
-              card={card} 
-              onClick={() => onCardClick?.(card.id)} 
+            <BoardCard
+              key={card.id}
+              card={card}
+              onClick={() => onCardClick?.(card.id)}
               onToggleComplete={onToggleComplete}
             />
           ))}
@@ -372,6 +372,15 @@ export function BoardColumn({
           </div>
         )}
       </div>
+
+      <ConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={() => onDeleteList(list.id)}
+        title="Delete List"
+        description="Are you sure you want to delete this list? All cards inside it will be permanently deleted."
+        confirmText="Delete List"
+      />
     </div>
   );
 }
