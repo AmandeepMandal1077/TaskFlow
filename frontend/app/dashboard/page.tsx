@@ -10,6 +10,7 @@ import { useBoards } from "@/lib/hooks/useBoards";
 import { useDebounce } from "@/lib/hooks/useDebounce";
 import { Loader, Plus, Search, X, Check } from "lucide-react";
 import Link from "next/link";
+import DashboardLoading from "./loading";
 
 const COLORS = [
   "bg-blue-600",
@@ -42,6 +43,10 @@ export default function Dashboard() {
   const filteredBoards = boards.filter((board) =>
     board.title.toLowerCase().includes(debouncedSearch.toLowerCase().trim()),
   );
+
+  if (loading) {
+    return <DashboardLoading />;
+  }
 
   const handleCreateBoard = async (e: React.FormEvent) => {
     e.preventDefault();

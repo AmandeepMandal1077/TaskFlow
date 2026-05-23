@@ -16,6 +16,7 @@ import { useParams } from "next/navigation";
 import { useRef, useState } from "react";
 import type React from "react";
 import Link from "next/link";
+import BoardLoading from "./loading";
 
 const COLORS = [
   "bg-blue-600",
@@ -45,6 +46,7 @@ export default function BoardPage() {
     updateListInBoard,
     deleteListInBoard,
     setLists,
+    loading,
   } = useBoard(id);
 
   const { boards } = useBoards();
@@ -84,6 +86,10 @@ export default function BoardPage() {
       b.id !== id &&
       b.title.toLowerCase().includes(debouncedBoardSearch.toLowerCase().trim()),
   );
+
+  if (loading) {
+    return <BoardLoading />;
+  }
 
   const boardTitle = board?.title || "Board";
   return (
