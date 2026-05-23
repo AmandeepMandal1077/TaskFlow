@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { ListWithCards } from "@/lib/hooks/useBoards";
-import { CardWithRelations } from "@/server/queries/card";
+import type { CardWithRelations } from "@/lib/api/types";
 import {
   Plus,
   X,

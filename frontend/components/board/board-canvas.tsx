@@ -16,10 +16,10 @@ import {
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
-import { CardWithRelations } from "@/server/queries/card";
+import type { CardWithRelations } from "@/lib/api/types";
 import { BoardCardOverlay } from "./board-card";
-import { reorderCards, updateCard } from "@/server/actions/card";
-import { reorderLists } from "@/server/actions/list";
+import { reorderCards, updateCard } from "@/lib/api/card";
+import { reorderLists } from "@/lib/api/list";
 import { CardDetailDialog } from "./card-detail-dialog";
 import { horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 

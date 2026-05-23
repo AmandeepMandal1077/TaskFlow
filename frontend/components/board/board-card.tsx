@@ -1,5 +1,5 @@
 import React from "react";
-import { CardWithRelations } from "@/server/queries/card";
+import type { CardWithRelations } from "@/lib/api/types";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { CheckSquare, Clock, Users } from "lucide-react";

@@ -6,8 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Search, X, Tag, Users, CalendarClock } from "lucide-react";
-import { getAllLabels } from "@/server/actions/label";
-import { getAllUsers } from "@/server/actions/user";
+import { getAllLabels } from "@/lib/api/label";
+import { getAllUsers } from "@/lib/api/user";
 import type { Label, User } from "@/generated/prisma/client";
 import type { CardFilters, DueDateFilter } from "@/lib/hooks/useCardFilters";
 

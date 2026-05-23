@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useMemo } from "react";
-import { CardWithRelations } from "@/server/queries/card";
+import type { CardWithRelations } from "@/lib/api/types";
 import { useDebounce } from "./useDebounce";
 import {
   isAfter,
