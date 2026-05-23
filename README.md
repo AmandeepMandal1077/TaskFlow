@@ -38,7 +38,7 @@ To get the entire project running locally, you'll need to set up both the backen
    ```bash
    bun install
    ```
-3. Set up your `.env` file with your `DATABASE_URL`.
+3. Set up your `.env` file with your `DATABASE_URL`, `PORT` and `FRONTEND_URL`.
 4. Initialize the database:
    ```bash
    bun run db:generate
@@ -59,7 +59,7 @@ To get the entire project running locally, you'll need to set up both the backen
    ```bash
    npm install
    ```
-3. Set up your `.env.local` file with the `NEXT_PUBLIC_API_URL` pointing to your backend (e.g., `http://localhost:5000`).
+3. Set up your `.env.local` file with the `NEXT_PUBLIC_API_URL` pointing to your backend (e.g., `http://localhost:3001`).
 4. Start the development server:
    ```bash
    npm run dev
@@ -72,7 +72,3 @@ To get the entire project running locally, you'll need to set up both the backen
 - **Modern UI:** Built with Radix UI components and Tailwind CSS.
 - **High Performance:** Backend runs on Bun, delivering instant responses.
 - **Type-Safe:** End-to-end TypeScript coverage.
-
-## 📄 License
-
-This project is licensed under the MIT License.

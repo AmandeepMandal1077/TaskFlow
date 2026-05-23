@@ -13,32 +13,68 @@ This is the backend service for TaskFlow, built with [Express](https://expressjs
 
 ## 📁 Folder Structure
 
-```text
+```
 backend/
-├── prisma.config.ts    # Prisma configuration
-├── src/                # Source code
-├── .env                # Environment variables (not tracked)
-├── package.json        # Dependencies and scripts
-└── tsconfig.json       # TypeScript configuration
+├── prisma.config.ts          # Prisma client & config helper used by the app
+├── src/                      # Application source code
+│   ├── app.ts                # Express app setup (middleware, routes, error handler)
+│   ├── server.ts             # Server bootstrap (listen, env checks)
+│   ├── generated/prisma/     # Prisma generated client and types (do not edit)
+│   │   ├── client.ts
+│   │   └── ...
+│   ├── lib/
+│   │   └── prisma.ts         # Prisma client wrapper used across the app
+│   ├── middlewares/          # Express middlewares
+│   │   ├── authMiddleware.ts
+│   │   ├── errorHandler.ts
+│   │   └── validateResource.ts
+│   ├── modules/              # Feature modules (grouped by domain)
+│   │   ├── board/
+│   │   │   ├── board.route.ts        # Route definitions
+│   │   │   ├── board.controller.ts   # Request handlers
+│   │   │   ├── board.repository.ts   # DB access via Prisma
+│   │   │   └── board.schema.ts       # Zod schemas + request validation
+│   │   ├── list/                     # Similar structure for lists
+│   │   ├── card/                     # Cards (controller, repository, route, schema)
+│   │   ├── label/                    # Labels
+│   │   └── user/                     # User auth / profile
+│   ├── prisma/                 # Source-managed Prisma files
+│   │   ├── schema.prisma       # Database schema (migrations generated from this)
+│   │   └── seed.ts             # Optional seed script for initial data
+│   ├── types/
+│   │   └── express/
+│   │       └── index.d.ts      # App-specific type augmentations for Express
+│   └── utils/                  # Small helpers used across modules
+│       ├── ApiError.ts
+│       ├── ApiResponse.ts
+│       ├── asyncHandler.ts
+│       └── date.ts
+├── .env                       # Environment variables (not committed)
+├── package.json               # Scripts, dependencies and Bun tasks
+└── tsconfig.json              # TypeScript compiler config
 ```
 
 ## 🛠️ Setup & Installation
 
 1. **Install Dependencies:**
    Ensure you have [Bun](https://bun.sh/) installed, then run:
+
    ```bash
    bun install
    ```
 
 2. **Environment Variables:**
    Create a `.env` file in the `backend` directory and configure your PostgreSQL database connection:
+
    ```env
-   DATABASE_URL="postgresql://user:password@localhost:5432/taskflow_db?schema=public"
-   PORT=5000
+   DATABASE_URL=your_database_url
+   PORT=3001
+   FRONTEND_URL=http://localhost:3000
    ```
 
 3. **Database Setup:**
    Generate the Prisma client and run migrations:
+
    ```bash
    bun run db:generate
    bun run db:migrate
@@ -52,10 +88,12 @@ backend/
 ## 💻 Running the Server
 
 - **Development:**
+
   ```bash
   bun run dev
   ```
-  *Runs the server in watch mode.*
+
+  _Runs the server in watch mode._
 
 - **Production Build:**
   ```bash
