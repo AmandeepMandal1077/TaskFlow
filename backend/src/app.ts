@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors';
 import type { Express, Request, Response } from 'express';
 import { errorHandler } from './middlewares/errorHandler.js';
 import { ApiError } from './utils/ApiError.js';
@@ -15,6 +16,10 @@ dotenv.config();
 const app: Express = express();
 
 // Middleware
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
