@@ -267,7 +267,7 @@ export function BoardCanvas({
             {lists.map((list) => {
               const filteredCards = filterCards(list.cards);
               const isCardDragging = !!activeCard;
-              const isTargetList = isCardDragging && list.cards.some(c => c.id === activeCard.id);
+              const isTargetList = isCardDragging && list.cards.some((c: CardWithRelations) => c.id === activeCard.id);
 
               return (
                 <BoardColumn

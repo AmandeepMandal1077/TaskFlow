@@ -187,7 +187,7 @@ export function useBoard(boardId: string) {
         let movedCard: CardWithRelations | null = null;
 
         for (const list of newLists) {
-          const cardIndex = list.cards.findIndex((card) => card.id === cardId);
+          const cardIndex = list.cards.findIndex((card: CardWithRelations) => card.id === cardId);
           if (cardIndex !== -1) {
             movedCard = list.cards[cardIndex];
             list.cards.splice(cardIndex, 1);
@@ -218,7 +218,7 @@ export function useBoard(boardId: string) {
       setLists((prevLists) =>
         prevLists.map((list) => ({
           ...list,
-          cards: list.cards.map((card) =>
+          cards: list.cards.map((card: CardWithRelations) =>
             card.id === cardId ? { ...card, ...updatedCard } : card
           ),
         }))
@@ -235,7 +235,7 @@ export function useBoard(boardId: string) {
       setLists((prevLists) =>
         prevLists.map((list) => ({
           ...list,
-          cards: list.cards.filter((card) => card.id !== cardId),
+          cards: list.cards.filter((card: CardWithRelations) => card.id !== cardId),
         }))
       );
     } catch (err) {
