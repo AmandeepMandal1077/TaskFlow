@@ -24,7 +24,7 @@ import {
   X,
 } from "lucide-react";
 import { format } from "date-fns";
-import { CardWithRelations } from "@/server/queries/card";
+import type { CardWithRelations } from "@/lib/api/types";
 import { ListWithCards } from "@/lib/hooks/useBoards";
 import {
   updateCard,
@@ -38,9 +38,9 @@ import {
   deleteChecklistItem,
   addAssigneeToCard,
   removeAssigneeFromCard,
-} from "@/server/actions/card";
-import { getAllLabels, createLabel } from "@/server/actions/label";
-import { getAllUsers } from "@/server/actions/user";
+} from "@/lib/api/card";
+import { getAllLabels, createLabel } from "@/lib/api/label";
+import { getAllUsers } from "@/lib/api/user";
 
 interface CardDetailDialogProps {
   card: CardWithRelations | null;

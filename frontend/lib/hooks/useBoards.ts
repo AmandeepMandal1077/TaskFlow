@@ -1,15 +1,15 @@
 "use client";
 
-import { Board, List } from "@/generated/prisma/browser";
-import { CardWithRelations } from "@/server/queries/card";
+import type { Board, List } from "@/generated/prisma/client";
+import type { CardWithRelations } from "@/lib/api/types";
 import {
   createBoardWithDefaultLists,
   getBoardsByEmail,
   getBoardWithLists,
   updateBoardWithId,
-} from "@/server/actions/board";
-import { createCard, moveCard as moveCardAction, updateCard as updateCardAction, deleteCard as deleteCardAction } from "@/server/actions/card";
-import { createList, updateList, deleteList } from "@/server/actions/list";
+} from "@/lib/api/board";
+import { createCard, moveCard as moveCardAction, updateCard as updateCardAction, deleteCard as deleteCardAction } from "@/lib/api/card";
+import { createList, updateList, deleteList } from "@/lib/api/list";
 
 export type ListWithCards = List & {
   cards: CardWithRelations[];
