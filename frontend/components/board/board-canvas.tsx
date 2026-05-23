@@ -241,9 +241,9 @@ export function BoardCanvas({
   };
 
   const handleToggleComplete = async (cardId: string, isComplete: boolean) => {
-    setLists((prev) => prev.map((l) => ({
+    setLists((prev: ListWithCards[]) => prev.map((l) => ({
       ...l,
-      cards: l.cards.map((c) => c.id === cardId ? { ...c, is_complete: isComplete } : c),
+      cards: l.cards.map((c: CardWithRelations) => c.id === cardId ? { ...c, is_complete: isComplete } : c),
     })));
     try {
       await updateCard(cardId, { is_complete: isComplete });

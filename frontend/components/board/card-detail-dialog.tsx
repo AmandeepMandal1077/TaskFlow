@@ -98,10 +98,10 @@ export function CardDetailDialog({
   const updateCardLocally = (
     updater: (c: CardWithRelations) => CardWithRelations,
   ) => {
-    setLists((prev) =>
+    setLists((prev: ListWithCards[]) =>
       prev.map((l) => ({
         ...l,
-        cards: l.cards.map((c) => (c.id === card.id ? updater(c) : c)),
+        cards: l.cards.map((c: CardWithRelations) => (c.id === card.id ? updater(c) : c)),
       })),
     );
   };
@@ -274,10 +274,10 @@ export function CardDetailDialog({
 
   const handleDeleteCard = async () => {
     if (!confirm("Are you sure you want to delete this card?")) return;
-    setLists((prev) =>
+    setLists((prev: ListWithCards[]) =>
       prev.map((l) => ({
         ...l,
-        cards: l.cards.filter((c) => c.id !== card.id),
+        cards: l.cards.filter((c: CardWithRelations) => c.id !== card.id),
       })),
     );
     onClose();
