@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TaskFlow Frontend
 
-## Getting Started
+This is the frontend application for TaskFlow, built with [Next.js](https://nextjs.org/) (App Router) and [React](https://react.dev/). It features a beautiful, modern UI styled with [Tailwind CSS v4](https://tailwindcss.com/) and [Radix UI](https://www.radix-ui.com/), with drag-and-drop capabilities powered by [`@dnd-kit`](https://dndkit.com/).
 
-First, run the development server:
+## 🚀 Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Framework:** Next.js 16
+- **UI Library:** React 19
+- **Styling:** Tailwind CSS v4
+- **Components:** Radix UI / Shadcn UI
+- **Interactions:** `@dnd-kit` (for Kanban board drag-and-drop)
+- **Language:** TypeScript
+
+## 📁 Folder Structure
+
+```text
+frontend/
+├── app/                # Next.js App Router
+├── components/         # React components
+├── lib/                # Utility functions and API client
+├── public/             # Static assets
+├── .env.local          # Environment variables (not tracked)
+├── next.config.ts      # Next.js configuration
+├── package.json        # Dependencies and scripts
+└── tsconfig.json       # TypeScript configuration
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Setup & Installation
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. **Install Dependencies:**
+   Ensure you have Node.js installed, then run:
+   ```bash
+   npm install
+   # or yarn / pnpm / bun install
+   ```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+2. **Environment Variables:**
+   Create a `.env.local` file in the `frontend` directory and add the backend API URL:
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:5000
+   ```
 
-## Learn More
+## 💻 Running the App
 
-To learn more about Next.js, take a look at the following resources:
+- **Development:**
+  ```bash
+  npm run dev
+  ```
+  Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Production Build:**
+  ```bash
+  npm run build
+  npm run start
+  ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📜 Available Scripts
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `npm run dev`: Starts the development server.
+- `npm run build`: Builds the app for production.
+- `npm run start`: Runs the built app in production mode.
+- `npm run lint`: Runs ESLint to find and fix problems.
