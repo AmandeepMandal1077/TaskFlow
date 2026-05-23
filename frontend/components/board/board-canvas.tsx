@@ -12,14 +12,16 @@ import {
   DragOverlay,
   DragStartEvent,
   PointerSensor,
-  closestCorners,
+  rectIntersection,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
 import { CardWithRelations } from "@/server/queries/card";
 import { BoardCardOverlay } from "./board-card";
 import { reorderCards, updateCard } from "@/server/actions/card";
+import { reorderLists } from "@/server/actions/list";
 import { CardDetailDialog } from "./card-detail-dialog";
+import { horizontalListSortingStrategy, SortableContext } from "@dnd-kit/sortable";
 
 interface BoardCanvasProps {
   listId: string;
@@ -53,6 +55,8 @@ export function BoardCanvas({
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [activeCard, setActiveCard] = useState<CardWithRelations | null>(null);
+  const [activeList, setActiveList] = useState<ListWithCards | null>(null);
+  const [activeListIsCollapsed, setActiveListIsCollapsed] = useState(false);
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
   const affectedListIds = useRef<Set<string>>(new Set());
   const sensors = useSensors(
@@ -64,6 +68,15 @@ export function BoardCanvas({
   );
 
   function handleDragStart(event: DragStartEvent) {
+    if (event.active.data.current?.type === "List") {
+      const list = lists.find((l) => l.id === event.active.id);
+      if (list) {
+        setActiveList(list);
+        setActiveListIsCollapsed(event.active.data.current.isCollapsed);
+      }
+      return;
+    }
+
     const cardId = event.active.id as string;
     const card = lists
       .flatMap((list) => list.cards)
@@ -79,6 +92,8 @@ export function BoardCanvas({
   }
 
   function handleDragOver(event: DragOverEvent) {
+    if (event.active.data.current?.type === "List") return;
+
     const { active, over } = event;
     if (!over) return;
 
@@ -140,6 +155,27 @@ export function BoardCanvas({
 
   async function handleDragEnd(event: DragEndEvent) {
     const { active, over } = event;
+
+    if (active.data.current?.type === "List") {
+      setActiveList(null);
+      if (!over) return;
+
+      if (active.id !== over.id) {
+        const oldIndex = lists.findIndex((l) => l.id === active.id);
+        const newIndex = lists.findIndex((l) => l.id === over.id);
+        const newLists = [...lists];
+        const [removed] = newLists.splice(oldIndex, 1);
+        newLists.splice(newIndex, 0, removed);
+
+        setLists(newLists);
+
+        reorderLists(newLists.map((l, i) => ({ id: l.id, order: i }))).catch((err) =>
+          console.error("Failed to reorder lists", err)
+        );
+      }
+      return;
+    }
+
     setActiveCard(null);
     if (!over) {
       affectedListIds.current.clear();
@@ -221,28 +257,34 @@ export function BoardCanvas({
       {/* Lists */}
       <DndContext
         sensors={sensors}
-        collisionDetection={closestCorners}
+        collisionDetection={rectIntersection}
         onDragStart={handleDragStart}
         onDragOver={handleDragOver}
         onDragEnd={handleDragEnd}
       >
         <div className="flex gap-3 px-4 sm:px-6 select-none items-start h-full pb-4">
-          {lists.map((list) => {
-            const filteredCards = filterCards(list.cards);
-            return (
-              <BoardColumn
-                key={list.id}
-                list={list}
-                filteredCards={filteredCards}
-                isAnyFilterActive={isAnyFilterActive}
-                onAddCard={onAddCard}
-                onRenameList={onRenameList}
-                onDeleteList={onDeleteList}
-                onCardClick={(cardId) => setSelectedCardId(cardId)}
-                onToggleComplete={handleToggleComplete}
-              />
-            );
-          })}
+          <SortableContext items={lists.map(l => l.id)} strategy={horizontalListSortingStrategy}>
+            {lists.map((list) => {
+              const filteredCards = filterCards(list.cards);
+              const isCardDragging = !!activeCard;
+              const isTargetList = isCardDragging && list.cards.some(c => c.id === activeCard.id);
+
+              return (
+                <BoardColumn
+                  key={list.id}
+                  list={list}
+                  filteredCards={filteredCards}
+                  isAnyFilterActive={isAnyFilterActive}
+                  onAddCard={onAddCard}
+                  onRenameList={onRenameList}
+                  onDeleteList={onDeleteList}
+                  onCardClick={(cardId) => setSelectedCardId(cardId)}
+                  onToggleComplete={handleToggleComplete}
+                  isTargetList={isTargetList}
+                />
+              );
+            })}
+          </SortableContext>
 
           {/* Add List Inline Panel */}
           <div className="w-64 shrink-0">
@@ -292,6 +334,17 @@ export function BoardCanvas({
           </div>
           <DragOverlay>
             {activeCard ? <BoardCardOverlay card={activeCard} /> : null}
+            {activeList ? (
+              <BoardColumn
+                list={activeList}
+                filteredCards={filterCards(activeList.cards)}
+                isAnyFilterActive={isAnyFilterActive}
+                onAddCard={onAddCard}
+                onRenameList={onRenameList}
+                onDeleteList={onDeleteList}
+                initialIsCollapsed={activeListIsCollapsed}
+              />
+            ) : null}
           </DragOverlay>
         </div>
       </DndContext>

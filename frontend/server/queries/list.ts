@@ -52,4 +52,20 @@ export const listService = {
       throw new Error("Failed to delete list");
     }
   },
+
+  async reorderLists(items: { id: string; order: number }[]) {
+    try {
+      return await prisma.$transaction(
+        items.map((item) =>
+          prisma.list.update({
+            where: { id: item.id },
+            data: { order: item.order },
+          }),
+        ),
+      );
+    } catch (error) {
+      console.error("Error reordering lists:", error);
+      throw new Error("Failed to reorder lists");
+    }
+  },
 };
