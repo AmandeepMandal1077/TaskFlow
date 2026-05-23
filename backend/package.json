@@ -5,7 +5,12 @@
   "private": true,
   "scripts": {
     "dev": "bun --watch src/server.ts",
-    "start": "bun src/server.ts"
+    "build": "prisma generate && bun build ./src/server.ts --outdir ./dist --target bun",
+    "start": "NODE_ENV=production bun ./dist/server.js",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "bun prisma/seed.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
